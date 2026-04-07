@@ -30,7 +30,7 @@ export default function App() {
 
   const [view, setView] = useState('logs') // 'logs' | 'docs'
   const [selectedDate, setSelectedDate] = useState(null)
-  const [filters, setFilters] = useState({ category: 'all' })
+  const [filters, setFilters] = useState({ category: 'all', tag: null })
   const [search, setSearch] = useState('')
   const [editingNote, setEditingNote] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
@@ -49,6 +49,7 @@ export default function App() {
   const filteredNotes = notes.filter(note => {
     if (selectedDate && note.date !== selectedDate) return false
     if (filters.category !== 'all' && note.category !== filters.category) return false
+    if (filters.tag && !note.tags.includes(filters.tag)) return false
     if (search.trim()) {
       const q = search.toLowerCase()
       if (!note.title.toLowerCase().includes(q) &&
@@ -62,6 +63,7 @@ export default function App() {
   // ── Docs filtering ────────────────────────────────────
   const filteredDocs = docs.filter(doc => {
     if (filters.category !== 'all' && doc.category !== filters.category) return false
+    if (filters.tag && !doc.tags.includes(filters.tag)) return false
     if (search.trim()) {
       const q = search.toLowerCase()
       if (!doc.title.toLowerCase().includes(q) &&
@@ -119,13 +121,20 @@ export default function App() {
   }
 
   // ── Grouped logs ──────────────────────────────────────
-  const groupByDate = view === 'logs' && !selectedDate
+  const groupByDate = view === 'logs' && !selectedDate && !filters.tag
   const notesByDate = groupByDate
     ? [...new Set(filteredNotes.map(n => n.date))].sort((a, b) => b.localeCompare(a))
         .map(date => ({ date, notes: filteredNotes.filter(n => n.date === date) }))
     : null
 
+  const handleTagClick = (tag) => {
+    setFilters(prev => ({ ...prev, tag: prev.tag === tag ? null : tag }))
+    setSelectedDate(null)
+    setView('logs')
+  }
+
   const mainTitle = view === 'docs' ? 'Documentation'
+    : filters.tag ? `Tag: "${filters.tag}"`
     : selectedDate
       ? isToday(selectedDate) ? "Today's Logs"
         : new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -156,6 +165,11 @@ export default function App() {
               {mainTitle}
               <span className="main-title-count">{totalCount}</span>
             </h2>
+            {filters.tag && (
+              <button className="tag-filter-chip" onClick={() => setFilters(prev => ({ ...prev, tag: null }))}>
+                # {filters.tag} ✕
+              </button>
+            )}
           </div>
 
           {/* ── DOCS VIEW ── */}
@@ -182,6 +196,7 @@ export default function App() {
                           onEdit={() => openEdit(doc)}
                           onDelete={() => deleteNote(doc.id)}
                           onToggleStep={toggleStep}
+                          onTagClick={handleTagClick}
                         />
                       ))}
                     </div>
@@ -219,6 +234,7 @@ export default function App() {
                           onEdit={() => openEdit(note)}
                           onDelete={() => deleteNote(note.id)}
                           onToggleStep={toggleStep}
+                          onTagClick={handleTagClick}
                         />
                       ))}
                     </div>
@@ -232,6 +248,7 @@ export default function App() {
                     onEdit={() => openEdit(note)}
                     onDelete={() => deleteNote(note.id)}
                     onToggleStep={toggleStep}
+                    onTagClick={handleTagClick}
                   />
                 ))}
               </div>

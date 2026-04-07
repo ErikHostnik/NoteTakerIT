@@ -10,7 +10,7 @@ const CAT_DIM = {
   'user-support': 'var(--purple-dim)', setup: 'var(--green-dim)', other: 'var(--gray-dim)',
 }
 
-export default function NoteCard({ note, onEdit, onDelete, onToggleStep, hideDate = false }) {
+export default function NoteCard({ note, onEdit, onDelete, onToggleStep, onTagClick, hideDate = false }) {
   const catColor = CAT_COLOR[note.category] || 'var(--gray)'
   const catDim = CAT_DIM[note.category] || 'var(--gray-dim)'
   const stepsTotal = note.steps.length
@@ -52,7 +52,13 @@ export default function NoteCard({ note, onEdit, onDelete, onToggleStep, hideDat
       <div className="card-bottom-row">
         {!hideDate && <span className="card-date">{formatDateShort(note.date)}</span>}
         <div className="card-tags">
-          {note.tags.slice(0, 3).map(tag => <span key={tag} className="tag">{tag}</span>)}
+          {note.tags.slice(0, 3).map(tag => (
+            <span
+              key={tag}
+              className="tag tag-clickable"
+              onClick={(e) => { e.stopPropagation(); onTagClick?.(tag) }}
+            >#{tag}</span>
+          ))}
         </div>
         <div className="card-actions">
           <button className="card-action-btn card-action-btn-edit" onClick={(e) => { e.stopPropagation(); onEdit() }} title="Edit">✎</button>
