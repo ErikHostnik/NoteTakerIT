@@ -18,7 +18,7 @@ function formatMonthLabel(monthKey) {
     .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 
-export default function Sidebar({ notes, selectedDate, onSelectDate, filters, onFiltersChange, view, onSetView }) {
+export default function Sidebar({ notes, selectedDate, onSelectDate, filters, onFiltersChange, view, onSetView, onOpenSettings }) {
   const logNotes = notes.filter(n => !n.isDoc)
   const uniqueDates = [...new Set(logNotes.map(n => n.date))].sort((a, b) => b.localeCompare(a))
 
@@ -163,6 +163,13 @@ export default function Sidebar({ notes, selectedDate, onSelectDate, filters, on
           ))}
         </div>
 
+      </div>
+
+      <div className="sidebar-footer">
+        <button className="sidebar-settings-btn" onClick={onOpenSettings}>
+          <span>⚙</span>
+          Settings
+        </button>
       </div>
     </aside>
   )

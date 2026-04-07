@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 import NoteCard from './components/NoteCard'
 import NoteModal from './components/NoteModal'
 import ReportModal from './components/ReportModal'
+import SettingsModal from './components/SettingsModal'
 import './App.css'
 
 const STORAGE_KEY = 'it-notes-v3'
@@ -34,6 +35,7 @@ export default function App() {
   const [editingNote, setEditingNote] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [isDark, setIsDark] = useState(() => localStorage.getItem('it-notes-theme') !== 'light')
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)) }, [notes])
@@ -101,6 +103,12 @@ export default function App() {
     else setNotes(prev => prev.filter(n => n.id !== id))
   }
 
+  const importData = (importedNotes, importedDocs) => {
+    setNotes(importedNotes)
+    setDocs(importedDocs)
+    setSettingsOpen(false)
+  }
+
   const toggleStep = (noteId, stepId) => {
     const updater = prev => prev.map(note => {
       if (note.id !== noteId) return note
@@ -140,6 +148,7 @@ export default function App() {
           onFiltersChange={setFilters}
           view={view}
           onSetView={(v) => { setView(v); setSelectedDate(null) }}
+          onOpenSettings={() => setSettingsOpen(true)}
         />
         <main className="main-content">
           <div className="main-header">
@@ -237,6 +246,9 @@ export default function App() {
       )}
       {reportOpen && (
         <ReportModal notes={notes} onClose={() => setReportOpen(false)} />
+      )}
+      {settingsOpen && (
+        <SettingsModal notes={notes} docs={docs} onImport={importData} onClose={() => setSettingsOpen(false)} />
       )}
     </div>
   )
