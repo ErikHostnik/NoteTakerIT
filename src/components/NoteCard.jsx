@@ -14,8 +14,6 @@ export default function NoteCard({ note, onEdit, onDelete, onToggleStep, hideDat
   const catColor = CAT_COLOR[note.category] || 'var(--gray)'
   const catDim = CAT_DIM[note.category] || 'var(--gray-dim)'
   const stepsTotal = note.steps.length
-  const stepsDone = note.steps.filter(s => s.completed).length
-  const progress = stepsTotal > 0 ? (stepsDone / stepsTotal) * 100 : 0
 
   const handleDelete = (e) => {
     e.stopPropagation()
@@ -43,14 +41,10 @@ export default function NoteCard({ note, onEdit, onDelete, onToggleStep, hideDat
       {/* Description */}
       {note.description && <div className="card-desc">{note.description}</div>}
 
-      {/* Steps progress */}
+      {/* Steps count */}
       {stepsTotal > 0 && (
         <div className="card-steps">
-          <div className="card-steps-bar">
-            <div className="card-steps-fill"
-              style={{ width: `${progress}%`, background: progress === 100 ? 'var(--green)' : catColor }} />
-          </div>
-          <span className="card-steps-label">{stepsDone}/{stepsTotal} steps</span>
+          <span className="card-steps-label">⋮ {stepsTotal} step{stepsTotal !== 1 ? 's' : ''}</span>
         </div>
       )}
 

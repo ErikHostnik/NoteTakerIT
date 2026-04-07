@@ -54,14 +54,6 @@ export default function NoteModal({ note, isDoc = false, onSave, onClose, onTogg
     onSave(form)
   }
 
-  const handleToggle = (stepId) => {
-    if (isNew) {
-      updateStep(stepId, { completed: !form.steps.find(s => s.id === stepId)?.completed })
-    } else {
-      onToggleStep(note.id, stepId)
-    }
-  }
-
   // ── VIEW MODE ──────────────────────────────────────────────
   if (mode === 'view') {
     const catColor = CAT_COLOR[form.category] || 'var(--gray)'
@@ -95,21 +87,18 @@ export default function NoteModal({ note, isDoc = false, onSave, onClose, onTogg
             {form.steps.length > 0 && (
               <div>
                 <div className="form-label" style={{ marginBottom: 8 }}>
-                  Steps — {form.steps.filter(s => s.completed).length}/{form.steps.length} checked
+                  Steps — {form.steps.length} total
                 </div>
                 <div className="view-steps-list">
-                  {form.steps.map(step => (
-                    <button
+                  {form.steps.map((step, idx) => (
+                    <div
                       key={step.id}
                       className="view-step"
                       style={{ paddingLeft: `${8 + step.level * 24}px` }}
-                      onClick={() => handleToggle(step.id)}
                     >
-                      <span className={`view-step-check ${step.completed ? 'done' : ''}`}>
-                        {step.completed ? '✓' : ''}
-                      </span>
-                      <span className={`view-step-text ${step.completed ? 'done' : ''}`}>{step.text}</span>
-                    </button>
+                      <span className="view-step-num">{idx + 1}.</span>
+                      <span className="view-step-text">{step.text}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -209,18 +198,13 @@ export default function NoteModal({ note, isDoc = false, onSave, onClose, onTogg
             )}
 
             <div className="steps-list">
-              {form.steps.map(step => (
+              {form.steps.map((step, idx) => (
                 <div key={step.id} className="step-row" style={{ marginLeft: `${step.level * 24}px` }}>
+                  <span className="step-num">{idx + 1}.</span>
                   <div className="step-indent-btns">
                     <button className="step-indent-btn" onClick={() => indentStep(step.id, -1)} disabled={step.level === 0}>←</button>
                     <button className="step-indent-btn" onClick={() => indentStep(step.id, 1)} disabled={step.level === 2}>→</button>
                   </div>
-                  <input
-                    type="checkbox"
-                    className="step-check"
-                    checked={step.completed}
-                    onChange={() => updateStep(step.id, { completed: !step.completed })}
-                  />
                   <input
                     className="step-input"
                     value={step.text}
