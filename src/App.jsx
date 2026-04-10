@@ -36,6 +36,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(() => localStorage.getItem('it-notes-theme') !== 'light')
 
   useEffect(() => {
+    document.title = "NoteTakerIT";
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
     localStorage.setItem('it-notes-theme', isDark ? 'dark' : 'light')
   }, [isDark])
