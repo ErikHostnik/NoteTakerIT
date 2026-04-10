@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 
-export default function SettingsModal({ notes, docs, onImport, onClose }) {
+export default function SettingsModal({ notes, docs, onImport, onClose, onLogout }) {
   const fileRef = useRef(null)
   const [status, setStatus] = useState(null) // { type: 'success'|'error', msg }
 
@@ -96,6 +96,9 @@ export default function SettingsModal({ notes, docs, onImport, onClose }) {
         </div>
 
         <div className="modal-footer">
+          {onLogout && (
+            <button className="btn btn-danger btn-sm" onClick={onLogout}>Sign Out</button>
+          )}
           <div style={{ flex: 1 }} />
           <button className="btn btn-ghost" onClick={onClose}>Close</button>
         </div>
